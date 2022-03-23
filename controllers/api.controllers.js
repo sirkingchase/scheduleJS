@@ -53,7 +53,7 @@ exports.getScheduleStatus = async function(req, res, next) {
     exec('ipset -L NetSet -o xml', {
         user: 'root',
         host: '192.168.1.1',
-        password: 'cc1229xx'
+        password: ''
       }, 
       function (err, stdout, stderr) {
         if( parser.validate(stdout) === true) { 
