@@ -1,0 +1,75 @@
+extends layout
+block content
+  script.
+    setInterval(timer, 1000);
+    function timer() {
+      var now = new Date();
+      var cds = document.getElementsByName("countdown");
+
+      cds.forEach(cd => 
+      {
+        if(cd.dataset.date != null)
+        {
+          var timeup = new Date(cd.dataset.date);
+          count = Math.round((timeup - now)/1000);
+
+          if(count>0){
+            var seconds = Math.floor((count%60));
+            var minutes = Math.floor((count/60) % 60);
+            var hours = Math.floor(count / 60 / 60)
+
+            hours = ('00'+hours).slice(-2);
+            minutes = ('00'+minutes).slice(-2);
+            seconds = ('00'+seconds).slice(-2);
+            cd.innerHTML = hours + ":" + minutes + ":" + seconds;
+            cd.dataset.timeoutSeconds = count;
+          }
+          else{
+            cd.dataset.date = null
+            cd.innerHTML = 'Expired';
+          }
+        };
+      });
+    }
+
+    function updateEndtime(id) {
+      var cn = '.endTime.' + id;
+      var newTime = $(cn).val();
+      var memberString = document.getElementById(id).dataset.member;
+      var member = JSON.parse(memberString);
+      member.timeoutTime = newTime;
+
+      $.ajax({
+          type: 'PUT',
+          url: '/api/schedule',
+          data: member
+      }).done(function (data) {
+          console.log('SUCCESS');
+          window.location.reload(true)
+      }).fail(function (msg) {
+          console.log('FAIL');
+      }).always(function (msg) {
+          console.log('ALWAYS');
+      });
+    };
+
+  div
+  table.table.table-striped
+    thead
+      tr
+        th Network 
+        th Time Left
+        th Expiration Date
+        th Subnet
+        th 
+      each member in members
+        input(type='hidden', data-member=JSON.stringify(member), id=member.name)
+        tr
+          td= member.name
+          td(id=member.ip, data-timeleft=timeoutSeconds, data-date=member.timeoutDate, name="countdown")
+          td
+            div.input
+            input( step='1', type='time',min= dtime, data-internet=member.ip, class='endTime ' + member.name, value=(member.timeoutTime == null ? dtime : member.timeoutTime) )
+          td= member.ip
+          td
+            button( type="button" onclick='updateEndtime("' + member.name +'")') Update Time

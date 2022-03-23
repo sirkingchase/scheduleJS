@@ -1,0 +1,14 @@
+extends layout
+block content
+    form(name="addTime", method="post")
+      div.input
+          span.label Title
+          select(id='internet', name='internet')
+            option(value='schedule') Preston
+            option(value='lot') LoT
+            option(value='both') Both
+      div.input
+          span.label Time
+          input(type='time', id='scheduleTime', name='scheduleTime', min='06:00', max='23:59', required, value=`${defaultTime}`)
+      div.actions
+          input(type="submit", value="add")
